@@ -22,6 +22,10 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
+@app.route('/topology')
+def topology():
+    return render_template('topology.html')
+
 @app.route('/api/events')
 def get_events():
     try:
