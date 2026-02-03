@@ -169,8 +169,8 @@
         
         // 设备拓扑数据
         var nodes = [
-            // 核心节点
-            { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' } },
+            // 核心节点 - 置于顶层，使用更有标识度的图标
+            { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' }, symbol: 'pin', x: '50%', y: '10%' },
             
             // 楼栋节点
             { id: 'building1', name: '楼栋 1', symbolSize: 50, itemStyle: { color: '#91cc75' } },
@@ -267,7 +267,9 @@
                     force: {
                         repulsion: 1500,
                         edgeLength: [100, 150],
-                        gravity: 0.1
+                        gravity: 0.1,
+                        center: [300, 100],
+                        layoutAnimation: true
                     }
                 }
             ]
