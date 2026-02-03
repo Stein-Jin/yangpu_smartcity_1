@@ -105,40 +105,49 @@
         <div class="info-section">
             <h2>拓扑关系说明</h2>
             <ul>
-                <li><strong>消防水泵房设备</strong>：水压监测、环境监测、液位监测设备连接在 RTU（远程终端单元）上，通过 RTU 供电和回传数据</li>
+                <li><strong>总体架构</strong>：本拓扑图展示了单栋楼的设备连接关系，共有 20 栋楼，每栋楼的拓扑关系相同</li>
+                <li><strong>消防水泵房设备</strong>：水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU（远程终端单元）上，通过 RTU 供电和回传数据</li>
                 <li><strong>楼层水压监测设备</strong>：单独通过 2G 无线网络回传到智慧消防服务器（公有云）</li>
-                <li><strong>其他设备</strong>：包括烟雾报警器、温湿度传感器等，通过有线网络连接</li>
+                <li><strong>其他设备</strong>：电气火灾、视频监测等设备通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
             </ul>
             
-            <h2>设备连接方式</h2>
+            <h2>设备类型说明</h2>
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #5470c6;"></div>
-                    <span>智慧消防服务器（公有云）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #91cc75;"></div>
-                    <span>RTU（远程终端单元）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fac858;"></div>
-                    <span>消防水泵房设备</span>
+                    <span>水压监测（圆形）</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #ee6666;"></div>
-                    <span>楼层水压监测设备</span>
+                    <span>电气火灾（矩形）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fac858;"></div>
+                    <span>视频监测（圆角矩形）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #91cc75;"></div>
+                    <span>环境监测（三角形）</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #73c0de;"></div>
-                    <span>其他设备（烟雾报警器等）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #3ba272;"></div>
-                    <span>有线网络连接</span>
+                    <span>液位监测（菱形）</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #fc8452;"></div>
-                    <span>2G 无线网络连接</span>
+                    <span>消防控制柜（箭头）</span>
+                </div>
+            </div>
+            
+            <h2>连接方式</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3ba272;"></div>
+                    <span>有线网络连接（实线）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fc8452;"></div>
+                    <span>2G 无线网络连接（虚线）</span>
                 </div>
             </div>
         </div>
@@ -153,69 +162,46 @@
             // 核心节点
             { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' } },
             
+            // 楼栋节点
+            { id: 'building1', name: '楼栋 1', symbolSize: 50, itemStyle: { color: '#91cc75' } },
+            
             // RTU 节点
-            { id: 'rtu1', name: 'RTU 1', symbolSize: 40, itemStyle: { color: '#91cc75' } },
-            { id: 'rtu2', name: 'RTU 2', symbolSize: 40, itemStyle: { color: '#91cc75' } },
-            { id: 'rtu3', name: 'RTU 3', symbolSize: 40, itemStyle: { color: '#91cc75' } },
+            { id: 'rtu', name: 'RTU（远程终端单元）', symbolSize: 40, itemStyle: { color: '#fac858' } },
             
-            // 消防水泵房设备
-            { id: 'pump_pressure1', name: '消防水泵房水压监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            { id: 'pump_env1', name: '消防水泵房环境监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            { id: 'pump_level1', name: '消防水泵房液位监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            { id: 'pump_pressure2', name: '消防水泵房水压监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            { id: 'pump_env2', name: '消防水泵房环境监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            { id: 'pump_level2', name: '消防水泵房液位监测', symbolSize: 30, itemStyle: { color: '#fac858' } },
-            
-            // 楼层水压监测设备
-            { id: 'floor_pressure1', name: '楼层水压监测', symbolSize: 25, itemStyle: { color: '#ee6666' } },
-            { id: 'floor_pressure2', name: '楼层水压监测', symbolSize: 25, itemStyle: { color: '#ee6666' } },
-            { id: 'floor_pressure3', name: '楼层水压监测', symbolSize: 25, itemStyle: { color: '#ee6666' } },
-            { id: 'floor_pressure4', name: '楼层水压监测', symbolSize: 25, itemStyle: { color: '#ee6666' } },
-            { id: 'floor_pressure5', name: '楼层水压监测', symbolSize: 25, itemStyle: { color: '#ee6666' } },
-            
-            // 其他设备
-            { id: 'smoke1', name: '烟雾报警器', symbolSize: 20, itemStyle: { color: '#73c0de' } },
-            { id: 'smoke2', name: '烟雾报警器', symbolSize: 20, itemStyle: { color: '#73c0de' } },
-            { id: 'smoke3', name: '烟雾报警器', symbolSize: 20, itemStyle: { color: '#73c0de' } },
-            { id: 'smoke4', name: '烟雾报警器', symbolSize: 20, itemStyle: { color: '#73c0de' } },
-            { id: 'temp1', name: '温湿度传感器', symbolSize: 20, itemStyle: { color: '#73c0de' } },
-            { id: 'temp2', name: '温湿度传感器', symbolSize: 20, itemStyle: { color: '#73c0de' } }
+            // 设备节点 - 不同图标和颜色表示不同类型
+            { id: 'water_pressure', name: '水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
+            { id: 'electric_fire', name: '电气火灾', symbolSize: 30, itemStyle: { color: '#ee6666' }, symbol: 'rect' },
+            { id: 'video', name: '视频监测', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
+            { id: 'environment', name: '环境监测', symbolSize: 30, itemStyle: { color: '#91cc75' }, symbol: 'triangle' },
+            { id: 'liquid_level', name: '液位监测', symbolSize: 30, itemStyle: { color: '#73c0de' }, symbol: 'diamond' },
+            { id: 'fire_control', name: '消防控制柜', symbolSize: 30, itemStyle: { color: '#fc8452' }, symbol: 'arrow' }
         ];
         
         var links = [
-            // RTU 连接到服务器
-            { source: 'rtu1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' } },
-            { source: 'rtu2', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' } },
-            { source: 'rtu3', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' } },
+            // 楼栋连接到服务器
+            { source: 'building1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' }, label: { show: true, formatter: '有线网络' } },
+            
+            // RTU 连接到楼栋
+            { source: 'rtu', target: 'building1', lineStyle: { color: '#3ba272', width: 2, type: 'solid' } },
             
             // 消防水泵房设备连接到 RTU
-            { source: 'pump_pressure1', target: 'rtu1', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'pump_env1', target: 'rtu1', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'pump_level1', target: 'rtu1', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'pump_pressure2', target: 'rtu2', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'pump_env2', target: 'rtu2', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'pump_level2', target: 'rtu2', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+            { source: 'water_pressure', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '水泵房设备' } },
+            { source: 'environment', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+            { source: 'liquid_level', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+            { source: 'fire_control', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
             
-            // 楼层水压监测设备连接到服务器（2G 无线）
-            { source: 'floor_pressure1', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
-            { source: 'floor_pressure2', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
-            { source: 'floor_pressure3', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
-            { source: 'floor_pressure4', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
-            { source: 'floor_pressure5', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
+            // 楼层水压监测设备直接连接到服务器（2G 无线）
+            { source: 'water_pressure', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '2G 无线' } },
             
-            // 其他设备连接到服务器（有线）
-            { source: 'smoke1', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
-            { source: 'smoke2', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
-            { source: 'smoke3', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
-            { source: 'smoke4', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
-            { source: 'temp1', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
-            { source: 'temp2', target: 'server', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
+            // 其他设备连接到楼栋（有线）
+            { source: 'electric_fire', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
+            { source: 'video', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
         ];
         
         // 图表配置
         var option = {
             title: {
-                text: '设备拓扑关系图',
+                text: '设备拓扑关系图（单栋楼示例）',
                 left: 'center'
             },
             tooltip: {
@@ -224,12 +210,17 @@
                     if (params.dataType === 'node') {
                         return params.name;
                     } else {
-                        return params.source.name + ' → ' + params.target.name;
+                        return params.source.name + ' → ' + params.target.name + '（' + params.data.label.formatter + '）';
                     }
                 }
             },
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
+            legend: {
+                data: ['水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜'],
+                orient: 'horizontal',
+                bottom: 0
+            },
             series: [
                 {
                     type: 'graph',
@@ -260,8 +251,9 @@
                         }
                     },
                     force: {
-                        repulsion: 1000,
-                        edgeLength: [80, 120]
+                        repulsion: 1500,
+                        edgeLength: [100, 150],
+                        gravity: 0.1
                     }
                 }
             ]
