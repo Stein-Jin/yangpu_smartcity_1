@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件分析系统</title>
+    <script src="https://cdn.staticfile.org/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .period-selector {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .period-select {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .stats-summary {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+            line-height: 1.5;
+        }
+        #chart-container {
+            width: 100%;
+            height: 500px;
+        }
+        #community-chart-container {
+            width: 100%;
+            height: 500px;
+            margin-top: 30px;
+        }
+        #trend-chart-container {
+            width: 100%;
+            height: 500px;
+            margin-top: 30px;
+        }
+        .stats-table-container {
+            margin-top: 30px;
+            max-height: 300px; /* 大约5行的高度 */
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .stats-table th,
+        .stats-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .stats-table th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>事件分析系统</h1>
+        <div class="period-selector">
+            <select id="period-select" class="period-select">
+                <option value="2025年11月11日-12月10日" selected>2025年11月11日-12月10日</option>
+                <option value="2025年12月11日-2026年1月10日">2025年12月11日-2026年1月10日</option>
+            </select>
+        </div>
+        <div id="stats-summary" class="stats-summary">
+            <!-- 统计信息将通过JavaScript动态填充 -->
+        </div>
+        <div id="chart-container"></div>
+        <div class="stats-table-container">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>事件类型</th>
+                        <th>事件等级</th>
+                        <th>事件数量</th>
+                        <th>占比(%)</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    <!-- 数据将通过JavaScript动态填充 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="period-selector" style="margin-top: 30px;">
+            <select id="event-select" class="period-select">
+                <option value="all" selected>全部事件</option>
+                <!-- 事件选项将通过JavaScript动态填充 -->
+            </select>
+        </div>
+        <div id="community-chart-container"></div>
+        <div id="trend-summary" class="stats-summary" style="margin-top: 30px;">
+            <!-- 趋势概括将通过JavaScript动态填充 -->
+        </div>
+        <div id="trend-chart-container"></div>
+    </div>
+    <script>
+        // 初始化图表
+        const chart = echarts.init(document.getElementById('chart-container'));
+        const communityChart = echarts.init(document.getElementById('community-chart-container'));
+        const trendChart = echarts.init(document.getElementById('trend-chart-container'));
+        
+        // 当前选中的周期和事件名称
+        let currentPeriod = '2025年11月11日-12月10日';
+        let currentEventName = 'all';
+        
+        // 加载数据
+        function loadData(period, eventName) {
+            // 加载事件类型数据
+            fetch(`/api/events?period=${encodeURIComponent(period)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 检查数据是否是数组
+                    if (Array.isArray(data)) {
+                        updateChart(data);
+                        updateTable(data);
+                        updateStatsSummary(data, period);
+                    } else if (data.error) {
+                        // 处理错误
+                        console.error('API Error:', data.error);
+                        // 显示错误信息
+                        document.getElementById('stats-body').innerHTML = '<tr><td colspan="4">加载数据失败: ' + data.error + '</td></tr>';
+                        // 清空图表
+                        chart.setOption({series: [{data: []}]});
+                        // 清空统计信息
+                        document.getElementById('stats-summary').innerHTML = '<p>加载数据失败: ' + data.error + '</p>';
+                    } else {
+                        // 处理其他异常情况
+                        console.error('Invalid data format:', data);
+                        document.getElementById('stats-body').innerHTML = '<tr><td colspan="4">数据格式错误</td></tr>';
+                        chart.setOption({series: [{data: []}]});
+                        // 清空统计信息
+                        document.getElementById('stats-summary').innerHTML = '<p>数据格式错误</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    document.getElementById('stats-body').innerHTML = '<tr><td colspan="4">加载数据失败: ' + error.message + '</td></tr>';
+                    chart.setOption({series: [{data: []}]});
+                    // 清空统计信息
+                    document.getElementById('stats-summary').innerHTML = '<p>加载数据失败: ' + error.message + '</p>';
+                });
+            
+            // 加载小区事件数据
+            fetch(`/api/community-events?period=${encodeURIComponent(period)}&event_name=${encodeURIComponent(eventName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 检查数据是否是数组
+                    if (Array.isArray(data)) {
+                        updateCommunityChart(data, period, eventName);
+                    } else if (data.error) {
+                        // 处理错误
+                        console.error('API Error:', data.error);
+                        // 清空图表
+                        communityChart.setOption({series: [{data: []}]});
+                    } else {
+                        // 处理其他异常情况
+                        console.error('Invalid data format:', data);
+                        communityChart.setOption({series: [{data: []}]});
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading community data:', error);
+                    communityChart.setOption({series: [{data: []}]});
+                });
+            
+            // 加载事件趋势数据
+            fetch(`/api/event-trends?period=${encodeURIComponent(period)}&event_name=${encodeURIComponent(eventName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 检查数据是否是数组
+                    if (Array.isArray(data)) {
+                        updateTrendChart(data, period, eventName);
+                    } else if (data.error) {
+                        // 处理错误
+                        console.error('API Error:', data.error);
+                        // 清空图表
+                        trendChart.setOption({series: [{data: []}]});
+                    } else {
+                        // 处理其他异常情况
+                        console.error('Invalid data format:', data);
+                        trendChart.setOption({series: [{data: []}]});
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading trend data:', error);
+                    trendChart.setOption({series: [{data: []}]});
+                });
+            
+            // 加载趋势统计数据
+            fetch(`/api/event-trend-stats?period=${encodeURIComponent(period)}&event_name=${encodeURIComponent(eventName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 检查数据是否有效
+                    if (!data.error) {
+                        updateTrendSummary(data, period, eventName);
+                    } else {
+                        // 处理错误
+                        console.error('API Error:', data.error);
+                        document.getElementById('trend-summary').innerHTML = '<p>加载统计数据失败</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading trend stats:', error);
+                    document.getElementById('trend-summary').innerHTML = '<p>加载统计数据失败: ' + error.message + '</p>';
+                });
+        }
+        
+        // 更新趋势概括
+        function updateTrendSummary(stats, period, eventName) {
+            const summaryDiv = document.getElementById('trend-summary');
+            if (!stats) {
+                summaryDiv.innerHTML = '<p>无法加载趋势统计数据</p>';
+                return;
+            }
+            
+            const { max_count, min_count, avg_count, main_events } = stats;
+            
+            // 构建概括文本
+            let summaryText = `<p><strong>${period}，每天发生事件数波动${max_count - min_count > 50 ? '较大' : '较小'}。最大值为 ${max_count}，最小值为 ${min_count}，均值 ${avg_count}。</strong></p>`;
+            
+            if (main_events && main_events.length > 0) {
+                if (eventName && eventName !== 'all') {
+                    summaryText += `<p>主要原因是${eventName}的数据量波动造成的。</p>`;
+                } else {
+                    summaryText += `<p>主要原因是${main_events.join('、')}的数据量波动较大造成的。</p>`;
+                }
+            }
+            
+            summaryDiv.innerHTML = summaryText;
+        }
+        
+        // 更新统计信息摘要
+        function updateStatsSummary(data, period) {
+            // 计算总事件数
+            const totalCount = data.reduce((sum, item) => sum + item.event_count, 0);
+            
+            // 获取排名前2的事件类型
+            const topEvents = data.slice(0, 2);
+            
+            // 生成统计信息
+            let summaryHTML = '';
+            if (topEvents.length > 0) {
+                summaryHTML = `<p>${period}事件数为${totalCount}件，各类型事件数量差异较大。`;
+                
+                if (topEvents[0]) {
+                    summaryHTML += `其中，${topEvents[0].event_name}占比最高，达 ${topEvents[0].ratio_percent}%，数量为${topEvents[0].event_count}次；`;
+                }
+                
+                if (topEvents[1]) {
+                    summaryHTML += `${topEvents[1].event_name}占比${topEvents[1].ratio_percent}%，数量为${topEvents[1].event_count}次。`;
+                }
+                
+                summaryHTML += `</p>`;
+            } else {
+                summaryHTML = `<p>${period}没有事件数据。</p>`;
+            }
+            
+            // 更新统计信息区域
+            document.getElementById('stats-summary').innerHTML = summaryHTML;
+        }
+        
+        // 更新图表
+        function updateChart(data) {
+            // 计算事件总数
+            const totalCount = data.reduce((sum, item) => sum + item.event_count, 0);
+            
+            const option = {
+                title: {
+                    text: `${currentPeriod} 事件类型分布`,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'center',
+                    data: data.map(item => item.event_name),
+                    type: 'scroll',
+                    pageIconSize: 10,
+                    pageTextStyle: {
+                        fontSize: 10
+                    }
+                },
+                series: [
+                    {
+                        name: '事件类型',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['65%', '50%'],
+                        data: data.map(item => ({
+                            value: item.event_count,
+                            name: item.event_name
+                        })),
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        label: {
+                            formatter: '{c} ({d}%)'
+                        },
+                        labelLine: {
+                            show: true
+                        },
+                        // 添加中心文本
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '14',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        // 添加中心文本
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: `总事件数\n${totalCount}`,
+                            fontSize: '16',
+                            fontWeight: 'bold'
+                        },
+                        // 隐藏扇区标签
+                        labelLine: {
+                            show: false
+                        }
+                    }
+                ]
+            };
+            chart.setOption(option);
+        }
+        
+        // 更新表格
+        function updateTable(data) {
+            const tbody = document.getElementById('stats-body');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = item.event_name;
+                row.insertCell(1).textContent = item.priority;
+                row.insertCell(2).textContent = item.event_count;
+                row.insertCell(3).textContent = item.ratio_percent;
+            });
+        }
+        
+        // 更新小区事件柱状图
+        function updateCommunityChart(data, period, eventName) {
+            // 按小区分组统计事件数量
+            const communityStats = {};
+            data.forEach(item => {
+                if (!communityStats[item.community_name]) {
+                    communityStats[item.community_name] = 0;
+                }
+                communityStats[item.community_name] += item.total_event_count;
+            });
+            
+            // 转换为数组并按事件数量排序
+            const sortedCommunities = Object.entries(communityStats)
+                .map(([name, count]) => ({name, count}))
+                .sort((a, b) => b.count - a.count);
+            
+            // 准备图表数据
+            const xAxisData = sortedCommunities.map(item => item.name);
+            const seriesData = sortedCommunities.map(item => item.count);
+            
+            // 生成图表标题
+            let chartTitle = `${period} 小区I级事件数量排名`;
+            if (eventName !== 'all') {
+                chartTitle = `${period} 小区'${eventName}' I级事件数量排名`;
+            }
+            
+            const option = {
+                title: {
+                    text: chartTitle,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xAxisData,
+                    axisLabel: {
+                        rotate: 45,
+                        interval: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '事件数量'
+                },
+                series: [
+                    {
+                        name: 'I级事件数量',
+                        type: 'bar',
+                        data: seriesData,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#83bff6'},
+                                {offset: 0.5, color: '#188df0'},
+                                {offset: 1, color: '#188df0'}
+                            ])
+                        },
+                        label: {
+                            show: true,
+                            position: 'top'
+                        }
+                    }
+                ]
+            };
+            
+            communityChart.setOption(option);
+        }
+        
+        // 更新事件趋势折线图
+        function updateTrendChart(data, period, eventName) {
+            // 按事件名称分组数据
+            const eventData = {};
+            const dates = new Set();
+            
+            data.forEach(item => {
+                dates.add(item.event_date);
+                if (!eventData[item.event_name]) {
+                    eventData[item.event_name] = {};
+                }
+                eventData[item.event_name][item.event_date] = item.total_event_count;
+            });
+            
+            // 转换为数组并排序日期
+            const sortedDates = Array.from(dates).sort();
+            
+            // 准备图表数据
+            const series = [];
+            const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
+            
+            let colorIndex = 0;
+            Object.entries(eventData).forEach(([eventName, dateData]) => {
+                const dataPoints = sortedDates.map(date => dateData[date] || 0);
+                series.push({
+                    name: eventName,
+                    type: 'line',
+                    data: dataPoints,
+                    itemStyle: {
+                        color: colors[colorIndex % colors.length]
+                    },
+                    lineStyle: {
+                        width: 2
+                    },
+                    symbol: 'circle',
+                    symbolSize: 6
+                });
+                colorIndex++;
+            });
+            
+            // 生成图表标题
+            let chartTitle = `${period} I级事件发生趋势（按天统计）`;
+            if (eventName !== 'all') {
+                chartTitle = `${period} "${eventName}" I级事件发生趋势（按天统计）`;
+            }
+            
+            const option = {
+                title: {
+                    text: chartTitle,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                legend: {
+                    data: Object.keys(eventData),
+                    orient: 'horizontal',
+                    bottom: 0,
+                    type: 'scroll'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: sortedDates,
+                    axisLabel: {
+                        rotate: 45,
+                        interval: 0
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '事件数量'
+                },
+                series: series
+            };
+            
+            trendChart.setOption(option);
+        }
+        
+        // 绑定周期切换事件
+        document.getElementById('period-select').addEventListener('change', function() {
+            // 更新当前周期并加载数据
+            currentPeriod = this.value;
+            loadData(currentPeriod, currentEventName);
+        });
+        
+        // 绑定事件名称切换事件
+        document.getElementById('event-select').addEventListener('change', function() {
+            // 更新当前事件名称并加载数据
+            currentEventName = this.value;
+            loadData(currentPeriod, currentEventName);
+        });
+        
+        // 加载事件名称列表
+        function loadEventNames() {
+            fetch('/api/event-names')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        const eventSelect = document.getElementById('event-select');
+                        // 清空现有的选项（保留"全部事件"）
+                        while (eventSelect.options.length > 1) {
+                            eventSelect.remove(1);
+                        }
+                        // 添加新的事件选项
+                        data.forEach(eventName => {
+                            const option = document.createElement('option');
+                            option.value = eventName;
+                            option.textContent = eventName;
+                            eventSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading event names:', error);
+                });
+        }
+        
+        // 初始加载数据
+        loadData(currentPeriod, currentEventName);
+        // 加载事件名称列表
+        loadEventNames();
+        
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            chart.resize();
+            communityChart.resize();
+            trendChart.resize();
+        });
+    </script>
+</body>
+</html>
