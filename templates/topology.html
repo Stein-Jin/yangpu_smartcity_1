@@ -210,7 +210,8 @@
                     if (params.dataType === 'node') {
                         return params.name;
                     } else {
-                        return params.source.name + ' → ' + params.target.name + '（' + params.data.label.formatter + '）';
+                        var label = params.data.label ? params.data.label.formatter : '';
+                        return params.source.name + ' → ' + params.target.name + (label ? '（' + label + '）' : '');
                     }
                 }
             },
