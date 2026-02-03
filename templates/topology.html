@@ -106,16 +106,22 @@
             <h2>拓扑关系说明</h2>
             <ul>
                 <li><strong>总体架构</strong>：本拓扑图展示了单栋楼的设备连接关系，共有 20 栋楼，每栋楼的拓扑关系相同</li>
-                <li><strong>消防水泵房设备</strong>：水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU（远程终端单元）上，通过 RTU 供电和回传数据</li>
-                <li><strong>楼层水压监测设备</strong>：单独通过 2G 无线网络回传到智慧消防服务器（公有云）</li>
-                <li><strong>其他设备</strong>：电气火灾、视频监测等设备通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
+                <li><strong>RTU（远程终端单元）</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                <li><strong>电气火灾</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                <li><strong>消防水泵房设备</strong>：消防泵水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU 上，通过有线连接到 RTU，再通过 RTU 回传数据</li>
+                <li><strong>楼层末端喷淋水压监测</strong>：通过无线网络直接连接到智慧消防服务器</li>
+                <li><strong>视频监测</strong>：通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
             </ul>
             
             <h2>设备类型说明</h2>
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #5470c6;"></div>
-                    <span>水压监测（圆形）</span>
+                    <span>消防泵水压监测（圆形）</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #5470c6;"></div>
+                    <span>楼层末端喷淋水压监测（圆形）</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #ee6666;"></div>
@@ -137,6 +143,10 @@
                     <div class="legend-color" style="background-color: #fc8452;"></div>
                     <span>消防控制柜（箭头）</span>
                 </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fac858;"></div>
+                    <span>RTU（远程终端单元）</span>
+                </div>
             </div>
             
             <h2>连接方式</h2>
@@ -147,7 +157,7 @@
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #fc8452;"></div>
-                    <span>2G 无线网络连接（虚线）</span>
+                    <span>无线网络连接（虚线）</span>
                 </div>
             </div>
         </div>
@@ -169,7 +179,8 @@
             { id: 'rtu', name: 'RTU（远程终端单元）', symbolSize: 40, itemStyle: { color: '#fac858' } },
             
             // 设备节点 - 不同图标和颜色表示不同类型
-            { id: 'water_pressure', name: '水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
+            { id: 'water_pressure_pump', name: '消防泵水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
+            { id: 'water_pressure_floor', name: '楼层末端喷淋水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
             { id: 'electric_fire', name: '电气火灾', symbolSize: 30, itemStyle: { color: '#ee6666' }, symbol: 'rect' },
             { id: 'video', name: '视频监测', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
             { id: 'environment', name: '环境监测', symbolSize: 30, itemStyle: { color: '#91cc75' }, symbol: 'triangle' },
@@ -181,20 +192,22 @@
             // 楼栋连接到服务器
             { source: 'building1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' }, label: { show: true, formatter: '有线网络' } },
             
-            // RTU 连接到楼栋
-            { source: 'rtu', target: 'building1', lineStyle: { color: '#3ba272', width: 2, type: 'solid' } },
+            // RTU 通过无线网络直接连接到服务器
+            { source: 'rtu', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
             
-            // 消防水泵房设备连接到 RTU
-            { source: 'water_pressure', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '水泵房设备' } },
+            // 消防水泵房设备连接到 RTU（有线）
+            { source: 'water_pressure_pump', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '有线连接' } },
             { source: 'environment', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
             { source: 'liquid_level', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
             { source: 'fire_control', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
             
-            // 楼层水压监测设备直接连接到服务器（2G 无线）
-            { source: 'water_pressure', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '2G 无线' } },
+            // 楼层末端喷淋水压监测通过无线网络连接到服务器
+            { source: 'water_pressure_floor', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
             
-            // 其他设备连接到楼栋（有线）
-            { source: 'electric_fire', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } },
+            // 电气火灾通过无线网络直接连接到服务器
+            { source: 'electric_fire', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+            
+            // 视频监测连接到楼栋（有线）
             { source: 'video', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
         ];
         
@@ -218,7 +231,7 @@
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
             legend: {
-                data: ['水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜'],
+                data: ['消防泵水压监测', '楼层末端喷淋水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜', 'RTU'],
                 orient: 'horizontal',
                 bottom: 0
             },
