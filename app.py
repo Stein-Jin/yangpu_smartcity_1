@@ -533,5 +533,142 @@ def get_community_events():
         print(f"Error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/api/device-data')
+def get_device_data():
+    try:
+        building_name = request.args.get('building_name')
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # SQL查询语句 - 根据原型文件中的查询逻辑
+        sql = """
+            SELECT 
+               设备编号, 
+               点位名称, 
+               设备类别, 
+               数值名称, 
+               数值, 
+               最后上报时间 
+            FROM 
+               (
+                 -- 1. 水压监测数据 
+                 SELECT 
+                   sc.sensor_id AS 设备编号, 
+                   sc.address AS 点位名称, 
+                   sc.sensor_name AS 设备类别, 
+                   wp."WaterPressure" AS 数值, 
+                   '水压值' AS 数值名称, 
+                   wp.received_time AS 最后上报时间, 
+                   '水压监测' AS 数据类型, 
+                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                 FROM 
+                   brain_device_manage.data_log_water_pressure wp 
+                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                 WHERE 
+                   sc.address LIKE %s 
+                   AND sc.project_code = '4' 
+                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
+                   -- 2. 环境监测-仅保留温度数据 
+                 SELECT 
+                   sc.sensor_id AS 设备编号, 
+                   sc.address AS 点位名称, 
+                   sc.sensor_name AS 设备类别, 
+                   wp."Temperature" AS 数值, 
+                   '温度' AS 数值名称, 
+                   wp.received_time AS 最后上报时间, 
+                   '环境监测' AS 数据类型, 
+                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                 FROM 
+                   brain_device_manage.data_log_environmental wp 
+                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                 WHERE 
+                   sc.address LIKE %s 
+                   AND sc.project_code = '4' 
+                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
+                   -- 3. 液位监测数据（改为仅保留最新1条） 
+                 SELECT 
+                   sc.sensor_id AS 设备编号, 
+                   sc.address AS 点位名称, 
+                   sc.sensor_name AS 设备类别, 
+                   wp."LiquidLevel" AS 数值, 
+                   '液位' AS 数值名称, 
+                   wp.received_time AS 最后上报时间, 
+                   '液位监测' AS 数据类型, 
+                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                 FROM 
+                   brain_device_manage.data_log_liquid_level wp 
+                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                 WHERE 
+                   sc.address LIKE %s 
+                   AND sc.project_code = '4' 
+                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
+                   -- 4. 电气火灾监测数据 
+                 SELECT 
+                   sc.sensor_id AS 设备编号, 
+                   sc.address AS 点位名称, 
+                   sc.sensor_name AS 设备类别, 
+                   wp."VoltageC" AS 数值, 
+                   '电压C' AS 数值名称, 
+                   wp.received_time AS 最后上报时间, 
+                   '电气火灾监测' AS 数据类型, 
+                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                 FROM 
+                   brain_device_manage.data_log_electrical_fire wp 
+                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                 WHERE 
+                   sc.address LIKE %s 
+                   AND sc.project_code = '4' 
+                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
+                   -- 5. 消防柜控制数据 
+                 SELECT 
+                   sc.sensor_id AS 设备编号, 
+                   sc.address AS 点位名称, 
+                   sc.sensor_name AS 设备类别, 
+                   wp."DevWorking01" AS 数值, 
+                   '设备运行01' AS 数值名称, 
+                   wp.received_time AS 最后上报时间, 
+                   '消防柜控制' AS 数据类型, 
+                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                 FROM 
+                   brain_device_manage.data_log_file_control wp 
+                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                 WHERE 
+                   sc.address LIKE %s 
+                   AND sc.project_code = '4' 
+                   AND wp.received_time >= '2026-01-20 23:59:59' 
+               ) AS sub_query 
+               -- 统一过滤规则：所有类型均只保留最新1条 
+            WHERE 
+               row_num = 1 
+            ORDER BY 
+               设备编号, 数据类型, 数值名称, 最后上报时间 DESC;
+        """
+        
+        # 构建查询参数
+        like_pattern = f'%{building_name}%'
+        cur.execute(sql, (like_pattern, like_pattern, like_pattern, like_pattern, like_pattern))
+        
+        results = cur.fetchall()
+        
+        # 转换结果为JSON格式
+        rows = []
+        for row in results:
+            rows.append({
+                '设备编号': row[0],
+                '点位名称': row[1],
+                '设备类别': row[2],
+                '数值名称': row[3],
+                '数值': row[4],
+                '最后上报时间': row[5]
+            })
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify(rows)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

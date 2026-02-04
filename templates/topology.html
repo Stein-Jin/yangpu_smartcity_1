@@ -19,7 +19,7 @@
             color: #333;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 20px auto;
             padding: 20px;
             background-color: white;
@@ -31,13 +31,47 @@
             margin-bottom: 30px;
             color: #333;
         }
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        .left-section {
+            flex: 1;
+            min-width: 500px;
+        }
+        .right-section {
+            flex: 1;
+            min-width: 500px;
+        }
         .chart-container {
             width: 100%;
-            height: 800px;
-            margin-bottom: 30px;
+            height: 600px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .building-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .building-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        .building-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
         }
         .info-section {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 8px;
@@ -89,6 +123,43 @@
         .nav-links a:hover {
             background-color: #45a049;
         }
+        .device-list {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        .device-list h2 {
+            margin-bottom: 20px;
+        }
+        .device-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .device-table th,
+        .device-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .device-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .device-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #d9534f;
+        }
     </style>
 </head>
 <body>
@@ -98,66 +169,60 @@
             <a href="/topology">设备拓扑</a>
         </div>
         
-        <h1>杨浦智慧消防设备拓扑关系图</h1>
+        <h1>杨浦智慧消防设备拓扑与数据监测</h1>
         
-        <div class="chart-container" id="topologyChart"></div>
-        
-        <div class="info-section">
-            <h2>拓扑关系说明</h2>
-            <ul>
-                <li><strong>总体架构</strong>：本拓扑图展示了单栋楼的设备连接关系，共有 20 栋楼，每栋楼的拓扑关系相同</li>
-                <li><strong>RTU（远程终端单元）</strong>：通过无线网络直接连接到智慧消防云服务器</li>
-                <li><strong>电气火灾</strong>：通过无线网络直接连接到智慧消防云服务器</li>
-                <li><strong>消防水泵房设备</strong>：消防泵水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU 上，通过有线连接到 RTU，再通过 RTU 回传数据</li>
-                <li><strong>楼层末端喷淋水压监测</strong>：通过无线网络直接连接到智慧消防服务器</li>
-                <li><strong>视频监测</strong>：通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
-            </ul>
-            
-            <h2>设备类型说明</h2>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #5470c6;"></div>
-                    <span>消防泵水压监测（圆形）</span>
+        <div class="main-content">
+            <!-- 左侧：楼栋选择器和拓扑图 -->
+            <div class="left-section">
+                <div class="building-selector">
+                    <label for="buildingSelect">选择楼栋：</label>
+                    <select id="buildingSelect" onchange="loadBuildingData(this.value)">
+                        <option value="">-- 请选择楼栋 --</option>
+                        <option value="延吉四村">延吉四村</option>
+                        <option value="延吉五村">延吉五村</option>
+                        <option value="延吉六村">延吉六村</option>
+                        <option value="延吉七村">延吉七村</option>
+                        <option value="延吉八村">延吉八村</option>
+                        <option value="延吉九村">延吉九村</option>
+                        <option value="延吉十村">延吉十村</option>
+                        <option value="控江一村">控江一村</option>
+                        <option value="控江二村">控江二村</option>
+                        <option value="控江三村">控江三村</option>
+                        <option value="控江四村">控江四村</option>
+                        <option value="控江五村">控江五村</option>
+                        <option value="控江六村">控江六村</option>
+                        <option value="控江七村">控江七村</option>
+                        <option value="控江八村">控江八村</option>
+                        <option value="控江九村">控江九村</option>
+                        <option value="控江十村">控江十村</option>
+                        <option value="黄兴一村">黄兴一村</option>
+                        <option value="黄兴二村">黄兴二村</option>
+                        <option value="黄兴三村">黄兴三村</option>
+                    </select>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #5470c6;"></div>
-                    <span>楼层末端喷淋水压监测（圆形）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ee6666;"></div>
-                    <span>电气火灾（矩形）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fac858;"></div>
-                    <span>视频监测（圆角矩形）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #91cc75;"></div>
-                    <span>环境监测（三角形）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #73c0de;"></div>
-                    <span>液位监测（菱形）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fc8452;"></div>
-                    <span>消防控制柜（箭头）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fac858;"></div>
-                    <span>RTU（远程终端单元）</span>
+                
+                <div class="chart-container" id="topologyChart"></div>
+                
+                <div class="info-section">
+                    <h2>拓扑关系说明</h2>
+                    <ul>
+                        <li><strong>总体架构</strong>：本拓扑图展示了单栋楼的设备连接关系，共有 20 栋楼，每栋楼的拓扑关系相同</li>
+                        <li><strong>RTU（远程终端单元）</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                        <li><strong>电气火灾</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                        <li><strong>消防水泵房设备</strong>：消防泵水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU 上，通过有线连接到 RTU，再通过 RTU 回传数据</li>
+                        <li><strong>楼层末端喷淋水压监测</strong>：通过无线网络直接连接到智慧消防服务器</li>
+                        <li><strong>视频监测</strong>：通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
+                    </ul>
                 </div>
             </div>
             
-            <h2>连接方式</h2>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #3ba272;"></div>
-                    <span>有线网络连接（实线）</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fc8452;"></div>
-                    <span>无线网络连接（虚线）</span>
+            <!-- 右侧：设备清单和数据 -->
+            <div class="right-section">
+                <div class="device-list">
+                    <h2>设备清单与数据</h2>
+                    <div id="deviceTableContainer">
+                        <div class="loading">请选择楼栋查看设备数据</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -166,117 +231,194 @@
     <script>
         // 初始化拓扑图
         var myChart = echarts.init(document.getElementById('topologyChart'));
+        var currentBuilding = '';
         
-        // 设备拓扑数据
-        var nodes = [
-            // 核心节点 - 置于顶层，使用更有标识度的图标
-            { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' }, symbol: 'pin', x: '50%', y: '10%' },
+        // 初始化拓扑图
+        function initTopologyChart(buildingName) {
+            // 设备拓扑数据
+            var nodes = [
+                // 核心节点 - 置于顶层，使用更有标识度的图标
+                { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' }, symbol: 'pin', x: '50%', y: '10%' },
+                
+                // 楼栋节点
+                { id: 'building1', name: buildingName || '楼栋', symbolSize: 50, itemStyle: { color: '#91cc75' } },
+                
+                // RTU 节点
+                { id: 'rtu', name: 'RTU（远程终端单元）', symbolSize: 40, itemStyle: { color: '#fac858' } },
+                
+                // 设备节点 - 不同图标和颜色表示不同类型
+                { id: 'water_pressure_pump', name: '消防泵水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
+                { id: 'water_pressure_floor', name: '楼层末端喷淋水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
+                { id: 'electric_fire', name: '电气火灾', symbolSize: 30, itemStyle: { color: '#ee6666' }, symbol: 'rect' },
+                { id: 'video', name: '视频监测', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
+                { id: 'environment', name: '环境监测', symbolSize: 30, itemStyle: { color: '#91cc75' }, symbol: 'triangle' },
+                { id: 'liquid_level', name: '液位监测', symbolSize: 30, itemStyle: { color: '#73c0de' }, symbol: 'diamond' },
+                { id: 'fire_control', name: '消防控制柜', symbolSize: 30, itemStyle: { color: '#fc8452' }, symbol: 'arrow' }
+            ];
             
-            // 楼栋节点
-            { id: 'building1', name: '楼栋 1', symbolSize: 50, itemStyle: { color: '#91cc75' } },
+            var links = [
+                // 楼栋连接到服务器
+                { source: 'building1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' }, label: { show: true, formatter: '有线网络' } },
+                
+                // RTU 通过无线网络直接连接到服务器
+                { source: 'rtu', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+                
+                // 消防水泵房设备连接到 RTU（有线）
+                { source: 'water_pressure_pump', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '有线连接' } },
+                { source: 'environment', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+                { source: 'liquid_level', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+                { source: 'fire_control', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+                
+                // 楼层末端喷淋水压监测通过无线网络连接到服务器
+                { source: 'water_pressure_floor', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+                
+                // 电气火灾通过无线网络直接连接到服务器
+                { source: 'electric_fire', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+                
+                // 视频监测连接到楼栋（有线）
+                { source: 'video', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
+            ];
             
-            // RTU 节点
-            { id: 'rtu', name: 'RTU（远程终端单元）', symbolSize: 40, itemStyle: { color: '#fac858' } },
-            
-            // 设备节点 - 不同图标和颜色表示不同类型
-            { id: 'water_pressure_pump', name: '消防泵水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
-            { id: 'water_pressure_floor', name: '楼层末端喷淋水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
-            { id: 'electric_fire', name: '电气火灾', symbolSize: 30, itemStyle: { color: '#ee6666' }, symbol: 'rect' },
-            { id: 'video', name: '视频监测', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
-            { id: 'environment', name: '环境监测', symbolSize: 30, itemStyle: { color: '#91cc75' }, symbol: 'triangle' },
-            { id: 'liquid_level', name: '液位监测', symbolSize: 30, itemStyle: { color: '#73c0de' }, symbol: 'diamond' },
-            { id: 'fire_control', name: '消防控制柜', symbolSize: 30, itemStyle: { color: '#fc8452' }, symbol: 'arrow' }
-        ];
-        
-        var links = [
-            // 楼栋连接到服务器
-            { source: 'building1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' }, label: { show: true, formatter: '有线网络' } },
-            
-            // RTU 通过无线网络直接连接到服务器
-            { source: 'rtu', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
-            
-            // 消防水泵房设备连接到 RTU（有线）
-            { source: 'water_pressure_pump', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '有线连接' } },
-            { source: 'environment', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'liquid_level', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            { source: 'fire_control', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-            
-            // 楼层末端喷淋水压监测通过无线网络连接到服务器
-            { source: 'water_pressure_floor', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
-            
-            // 电气火灾通过无线网络直接连接到服务器
-            { source: 'electric_fire', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
-            
-            // 视频监测连接到楼栋（有线）
-            { source: 'video', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
-        ];
-        
-        // 图表配置
-        var option = {
-            title: {
-                text: '设备拓扑关系图（单栋楼示例）',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: function(params) {
-                    if (params.dataType === 'node') {
-                        return params.name;
-                    } else {
-                        var label = params.data.label ? params.data.label.formatter : '';
-                        return params.source.name + ' → ' + params.target.name + (label ? '（' + label + '）' : '');
-                    }
-                }
-            },
-            animationDurationUpdate: 1500,
-            animationEasingUpdate: 'quinticInOut',
-            legend: {
-                data: ['消防泵水压监测', '楼层末端喷淋水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜', 'RTU'],
-                orient: 'horizontal',
-                bottom: 0
-            },
-            series: [
-                {
-                    type: 'graph',
-                    layout: 'force',
-                    data: nodes,
-                    links: links,
-                    roam: true,
-                    label: {
-                        show: true,
-                        position: 'right',
-                        formatter: '{b}'
-                    },
-                    labelLayout: {
-                        hideOverlap: true
-                    },
-                    scaleLimit: {
-                        min: 0.4,
-                        max: 2
-                    },
-                    lineStyle: {
-                        color: 'source',
-                        curveness: 0.3
-                    },
-                    emphasis: {
-                        focus: 'adjacency',
-                        lineStyle: {
-                            width: 4
+            // 图表配置
+            var option = {
+                title: {
+                    text: buildingName ? buildingName + ' 设备拓扑关系图' : '设备拓扑关系图',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.dataType === 'node') {
+                            return params.name;
+                        } else {
+                            var label = params.data.label ? params.data.label.formatter : '';
+                            return params.source.name + ' → ' + params.target.name + (label ? '（' + label + '）' : '');
                         }
-                    },
-                    force: {
-                        repulsion: 1500,
-                        edgeLength: [100, 150],
-                        gravity: 0.1,
-                        center: [300, 100],
-                        layoutAnimation: true
                     }
-                }
-            ]
-        };
+                },
+                animationDurationUpdate: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                legend: {
+                    data: ['消防泵水压监测', '楼层末端喷淋水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜', 'RTU'],
+                    orient: 'horizontal',
+                    bottom: 0
+                },
+                series: [
+                    {
+                        type: 'graph',
+                        layout: 'force',
+                        data: nodes,
+                        links: links,
+                        roam: true,
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: '{b}'
+                        },
+                        labelLayout: {
+                            hideOverlap: true
+                        },
+                        scaleLimit: {
+                            min: 0.4,
+                            max: 2
+                        },
+                        lineStyle: {
+                            color: 'source',
+                            curveness: 0.3
+                        },
+                        emphasis: {
+                            focus: 'adjacency',
+                            lineStyle: {
+                                width: 4
+                            }
+                        },
+                        force: {
+                            repulsion: 1500,
+                            edgeLength: [100, 150],
+                            gravity: 0.1,
+                            center: [300, 100],
+                            layoutAnimation: true
+                        }
+                    }
+                ]
+            };
+            
+            // 设置图表配置
+            myChart.setOption(option);
+        }
         
-        // 设置图表配置
-        myChart.setOption(option);
+        // 加载楼栋数据
+        function loadBuildingData(buildingName) {
+            currentBuilding = buildingName;
+            
+            // 更新拓扑图
+            initTopologyChart(buildingName);
+            
+            // 加载设备数据
+            if (buildingName) {
+                document.getElementById('deviceTableContainer').innerHTML = '<div class="loading">加载设备数据中...</div>';
+                
+                // 调用后端 API 获取数据
+                fetch(`/api/device-data?building_name=${encodeURIComponent(buildingName)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 渲染设备数据表格
+                        renderDeviceTable(data);
+                    })
+                    .catch(error => {
+                        console.error('Error loading device data:', error);
+                        document.getElementById('deviceTableContainer').innerHTML = '<div class="error">加载设备数据失败</div>';
+                    });
+            } else {
+                document.getElementById('deviceTableContainer').innerHTML = '<div class="loading">请选择楼栋查看设备数据</div>';
+            }
+        }
+        
+        // 渲染设备数据表格
+        function renderDeviceTable(data) {
+            if (!data || data.length === 0) {
+                document.getElementById('deviceTableContainer').innerHTML = '<div class="error">未找到设备数据</div>';
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="device-table">
+                    <thead>
+                        <tr>
+                            <th>设备编号</th>
+                            <th>点位名称</th>
+                            <th>设备类别</th>
+                            <th>数值名称</th>
+                            <th>数值</th>
+                            <th>最后上报时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            data.forEach(item => {
+                tableHTML += `
+                    <tr>
+                        <td>${item['设备编号']}</td>
+                        <td>${item['点位名称']}</td>
+                        <td>${item['设备类别']}</td>
+                        <td>${item['数值名称']}</td>
+                        <td>${item['数值']}</td>
+                        <td>${item['最后上报时间']}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('deviceTableContainer').innerHTML = tableHTML;
+        }
+        
+        // 初始化拓扑图
+        initTopologyChart();
         
         // 响应式处理
         window.addEventListener('resize', function() {
