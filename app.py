@@ -43,6 +43,17 @@ def get_events():
                     CASE
                         WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                         WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                        WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                        WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                        WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                        WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                        WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                        WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                        WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                        WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                        WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                        WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                        WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                         ELSE '其他时间段'
                     END AS time_period,
                     COUNT(1) AS event_count
@@ -53,7 +64,7 @@ def get_events():
                     AND sc.project_code = '4'
                 -- 核心筛选：仅保留指定的event_name
                 WHERE
-                    er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name IN (
                         '杨浦消防门常开告警',
                         '杨浦消防通道门30分钟常开预警',
@@ -124,8 +135,10 @@ def get_events():
         
         return jsonify(rows)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 @app.route('/api/event-names')
 def get_event_names():
@@ -144,7 +157,7 @@ def get_event_names():
                 AND sc.project_code = '4'
             WHERE
                 er.priority = 'Ⅰ级'
-                AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                AND er.gmt_create BETWEEN '2025-11-11' AND '2026-02-10 23:59:59'
                 AND er.event_name IN (
                     '杨浦楼道电弧漏电特别严重报警',
                     '杨浦住宅楼道火灾烟雾连续报警',
@@ -161,8 +174,10 @@ def get_event_names():
         
         return jsonify(event_names)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 @app.route('/api/event-trend-stats')
 def get_event_trend_stats():
@@ -185,12 +200,23 @@ def get_event_trend_stats():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name = %s
                     AND (
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 GROUP BY
@@ -211,7 +237,7 @@ def get_event_trend_stats():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name IN (
                         '杨浦楼道电弧漏电特别严重报警',
                         '杨浦住宅楼道火灾烟雾连续报警',
@@ -221,6 +247,17 @@ def get_event_trend_stats():
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 GROUP BY
@@ -256,7 +293,7 @@ def get_event_trend_stats():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name IN (
                         '杨浦楼道电弧漏电特别严重报警',
                         '杨浦住宅楼道火灾烟雾连续报警',
@@ -266,6 +303,17 @@ def get_event_trend_stats():
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 GROUP BY
@@ -292,8 +340,10 @@ def get_event_trend_stats():
         
         return jsonify(stats)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 @app.route('/api/event-trends')
 def get_event_trends():
@@ -311,6 +361,17 @@ def get_event_trends():
                     CASE
                         WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                         WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                        WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                        WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                        WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                        WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                        WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                        WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                        WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                        WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                        WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                        WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                        WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                         ELSE '其他时间段'
                     END AS time_period,
                     -- 事件发生日期（核心分组维度，无小时）
@@ -326,12 +387,23 @@ def get_event_trends():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'  -- 筛选I级事件
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name = %s
                     AND (
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 -- 仅按周期、日期、事件名称分组（核心：只保留日期维度，无小时/小区）
@@ -353,6 +425,17 @@ def get_event_trends():
                     CASE
                         WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                         WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                        WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                        WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                        WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                        WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                        WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                        WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                        WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                        WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                        WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                        WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                        WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                         ELSE '其他时间段'
                     END AS time_period,
                     -- 事件发生日期（核心分组维度，无小时）
@@ -368,7 +451,7 @@ def get_event_trends():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'  -- 筛选I级事件
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name IN (
                         '杨浦楼道电弧漏电特别严重报警',
                         '杨浦住宅楼道火灾烟雾连续报警',
@@ -378,6 +461,17 @@ def get_event_trends():
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 -- 仅按周期、日期、事件名称分组（核心：只保留日期维度，无小时/小区）
@@ -410,8 +504,10 @@ def get_event_trends():
         
         return jsonify(rows)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 @app.route('/api/community-events')
 def get_community_events():
@@ -429,6 +525,17 @@ def get_community_events():
                     CASE
                         WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                         WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                        WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                        WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                        WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                        WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                        WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                        WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                        WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                        WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                        WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                        WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                        WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                         ELSE '其他时间段'
                     END AS time_period,
                     -- 住宅小区名称（核心分组维度）
@@ -444,12 +551,23 @@ def get_community_events():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'  
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name = %s
                     AND (
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 -- 仅按周期、小区、事件名称分组（核心：只保留小区维度）
@@ -464,6 +582,7 @@ def get_community_events():
                     sc.community_name,
                     er.event_name;
             """
+
             cur.execute(sql, (event_name, period))
         else:
             sql = """
@@ -472,6 +591,17 @@ def get_community_events():
                     CASE
                         WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                         WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                        WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                        WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                        WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                        WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                        WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                        WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                        WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                        WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                        WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                        WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                        WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                         ELSE '其他时间段'
                     END AS time_period,
                     -- 住宅小区名称（核心分组维度）
@@ -487,7 +617,7 @@ def get_community_events():
                     AND sc.project_code = '4'
                 WHERE
                     er.priority = 'Ⅰ级'  -- 筛选I级事件（值为'I'则改为'er.priority = 'I''）
-                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-01-10 23:59:59'
+                    AND er.gmt_create BETWEEN '2025-11-11' AND '2026-12-10 23:59:59'
                     AND er.event_name IN (
                         '杨浦楼道电弧漏电特别严重报警',
                         '杨浦住宅楼道火灾烟雾连续报警',
@@ -497,6 +627,17 @@ def get_community_events():
                         CASE
                             WHEN er.gmt_create >= '2025-11-11' AND er.gmt_create < '2025-12-11' THEN '2025年11月11日-12月10日'
                             WHEN er.gmt_create >= '2025-12-11' AND er.gmt_create < '2026-01-11' THEN '2025年12月11日-2026年1月10日'
+                            WHEN er.gmt_create >= '2026-01-11' AND er.gmt_create < '2026-02-11' THEN '2026年1月11日-2026年2月10日'
+                            WHEN er.gmt_create >= '2026-02-11' AND er.gmt_create < '2026-03-11' THEN '2026年2月11日-2026年3月10日'
+                            WHEN er.gmt_create >= '2026-03-11' AND er.gmt_create < '2026-04-11' THEN '2026年3月11日-2026年4月10日'
+                            WHEN er.gmt_create >= '2026-04-11' AND er.gmt_create < '2026-05-11' THEN '2026年4月11日-2026年5月10日'
+                            WHEN er.gmt_create >= '2026-05-11' AND er.gmt_create < '2026-06-11' THEN '2026年5月11日-2026年6月10日'
+                            WHEN er.gmt_create >= '2026-06-11' AND er.gmt_create < '2026-07-11' THEN '2026年6月11日-2026年7月10日'
+                            WHEN er.gmt_create >= '2026-07-11' AND er.gmt_create < '2026-08-11' THEN '2026年7月11日-2026年8月10日'
+                            WHEN er.gmt_create >= '2026-08-11' AND er.gmt_create < '2026-09-11' THEN '2026年8月11日-2026年9月10日'
+                            WHEN er.gmt_create >= '2026-09-11' AND er.gmt_create < '2026-10-11' THEN '2026年9月11日-2026年10月10日'
+                            WHEN er.gmt_create >= '2026-10-11' AND er.gmt_create < '2026-11-11' THEN '2026年10月11日-2026年11月10日'
+                            WHEN er.gmt_create >= '2026-11-11' AND er.gmt_create < '2026-12-11' THEN '2026年11月11日-2026年12月10日'
                             ELSE '其他时间段'
                         END) = %s
                 -- 仅按周期、小区、事件名称分组（核心：只保留小区维度）
@@ -530,124 +671,313 @@ def get_community_events():
         
         return jsonify(rows)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 @app.route('/api/device-data')
 def get_device_data():
     try:
         building_name = request.args.get('building_name')
+        device_type = request.args.get('device_type')
+        additional_filter = request.args.get('additional_filter')
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # SQL查询语句 - 根据原型文件中的查询逻辑
-        sql = """
-            SELECT 
-               设备编号, 
-               点位名称, 
-               设备类别, 
-               数值名称, 
-               数值, 
-               最后上报时间 
-            FROM 
-               (
-                 -- 1. 水压监测数据 
-                 SELECT 
-                   sc.sensor_id AS 设备编号, 
-                   sc.address AS 点位名称, 
-                   sc.sensor_name AS 设备类别, 
-                   wp."WaterPressure" AS 数值, 
-                   '水压值' AS 数值名称, 
-                   wp.received_time AS 最后上报时间, 
-                   '水压监测' AS 数据类型, 
-                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
-                 FROM 
-                   brain_device_manage.data_log_water_pressure wp 
-                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
-                 WHERE 
-                   sc.address LIKE %s 
-                   AND sc.project_code = '4' 
-                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
-                   -- 2. 环境监测-仅保留温度数据 
-                 SELECT 
-                   sc.sensor_id AS 设备编号, 
-                   sc.address AS 点位名称, 
-                   sc.sensor_name AS 设备类别, 
-                   wp."Temperature" AS 数值, 
-                   '温度' AS 数值名称, 
-                   wp.received_time AS 最后上报时间, 
-                   '环境监测' AS 数据类型, 
-                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
-                 FROM 
-                   brain_device_manage.data_log_environmental wp 
-                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
-                 WHERE 
-                   sc.address LIKE %s 
-                   AND sc.project_code = '4' 
-                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
-                   -- 3. 液位监测数据（改为仅保留最新1条） 
-                 SELECT 
-                   sc.sensor_id AS 设备编号, 
-                   sc.address AS 点位名称, 
-                   sc.sensor_name AS 设备类别, 
-                   wp."LiquidLevel" AS 数值, 
-                   '液位' AS 数值名称, 
-                   wp.received_time AS 最后上报时间, 
-                   '液位监测' AS 数据类型, 
-                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
-                 FROM 
-                   brain_device_manage.data_log_liquid_level wp 
-                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
-                 WHERE 
-                   sc.address LIKE %s 
-                   AND sc.project_code = '4' 
-                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
-                   -- 4. 电气火灾监测数据 
-                 SELECT 
-                   sc.sensor_id AS 设备编号, 
-                   sc.address AS 点位名称, 
-                   sc.sensor_name AS 设备类别, 
-                   wp."VoltageC" AS 数值, 
-                   '电压C' AS 数值名称, 
-                   wp.received_time AS 最后上报时间, 
-                   '电气火灾监测' AS 数据类型, 
-                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
-                 FROM 
-                   brain_device_manage.data_log_electrical_fire wp 
-                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
-                 WHERE 
-                   sc.address LIKE %s 
-                   AND sc.project_code = '4' 
-                   AND wp.received_time >= '2026-01-20 23:59:59' UNION ALL 
-                   -- 5. 消防柜控制数据 
-                 SELECT 
-                   sc.sensor_id AS 设备编号, 
-                   sc.address AS 点位名称, 
-                   sc.sensor_name AS 设备类别, 
-                   wp."DevWorking01" AS 数值, 
-                   '设备运行01' AS 数值名称, 
-                   wp.received_time AS 最后上报时间, 
-                   '消防柜控制' AS 数据类型, 
-                   ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
-                 FROM 
-                   brain_device_manage.data_log_file_control wp 
-                   INNER JOIN sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
-                 WHERE 
-                   sc.address LIKE %s 
-                   AND sc.project_code = '4' 
-                   AND wp.received_time >= '2026-01-20 23:59:59' 
-               ) AS sub_query 
-               -- 统一过滤规则：所有类型均只保留最新1条 
-            WHERE 
-               row_num = 1 
-            ORDER BY 
-               设备编号, 数据类型, 数值名称, 最后上报时间 DESC;
-        """
+        # 构建基础SQL查询
+        if building_name == 'all':
+            # 查询所有楼栋的数据
+            base_sql = """
+                SELECT 
+                   设备编号, 
+                   点位名称, 
+                   设备类别, 
+                   数值, 
+                   数值名称, 
+                   最后上报时间 
+                FROM 
+                   (
+                     -- 1. 水压监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."WaterPressure" AS 数值, 
+                       '水压值' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '水压监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_water_pressure wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       UNION ALL 
+                       -- 2. 环境监测-仅保留温度数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."Temperature" AS 数值, 
+                       '温度' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '环境监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_environmental wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       UNION ALL 
+                       -- 3. 液位监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."LiquidLevel" AS 数值, 
+                       '液位' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '液位监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_liquid_level wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       UNION ALL 
+                       -- 4. 电气火灾监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VoltageC" AS 数值, 
+                       '电压C' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '电气火灾监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_electrical_fire wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       UNION ALL 
+                       -- 5. 消防控制柜数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."DevWorking01" AS 数值, 
+                       '设备运行01' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '消防控制柜' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_file_control wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       UNION ALL
+                       -- 6. 视频告警传感器 （占道）
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VideoAlarm01" AS 数值, 
+                       '占道检测' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '视频告警' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_video_alarm wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       AND sc.address NOT LIKE '%%配电%%' AND sc.address NOT LIKE '%%水泵房%%'
+                       UNION ALL
+                       -- 7. 视频告警传感器 （着火）
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VideoAlarm02" AS 数值, 
+                       '着火检测' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '视频告警' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_video_alarm wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.project_code = '4' 
+                       AND (sc.address LIKE '%%配电%%' OR sc.address LIKE '%%水泵房%%')
+                   ) AS sub_query 
+                   WHERE 
+                       row_num = 1 
+            """
+        else:
+            # 按楼栋名称查询数据
+            base_sql = """
+                SELECT 
+                   设备编号, 
+                   点位名称, 
+                   设备类别, 
+                   数值, 
+                   数值名称, 
+                   最后上报时间 
+                FROM 
+                   (
+                     -- 1. 水压监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."WaterPressure" AS 数值, 
+                       '水压值' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '水压监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_water_pressure wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       UNION ALL 
+                       -- 2. 环境监测-仅保留温度数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."Temperature" AS 数值, 
+                       '温度' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '环境监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_environmental wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       UNION ALL 
+                       -- 3. 液位监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."LiquidLevel" AS 数值, 
+                       '液位' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '液位监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_liquid_level wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       UNION ALL 
+                       -- 4. 电气火灾监测数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VoltageC" AS 数值, 
+                       '电压C' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '电气火灾监测' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_electrical_fire wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       UNION ALL 
+                       -- 5. 消防控制柜数据 
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."DevWorking01" AS 数值, 
+                       '设备运行01' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '消防控制柜' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_file_control wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       UNION ALL
+                       -- 6. 视频告警传感器 （占道）
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VideoAlarm01" AS 数值, 
+                       '占道检测' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '视频告警' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_video_alarm wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       AND sc.address NOT LIKE '%%配电%%' AND sc.address NOT LIKE '%%水泵房%%'
+                       UNION ALL
+                       -- 7. 视频告警传感器 （着火）
+                     SELECT 
+                       sc.sensor_id AS 设备编号, 
+                       sc.address AS 点位名称, 
+                       sc.sensor_name AS 设备类别, 
+                       wp."VideoAlarm02" AS 数值, 
+                       '着火检测' AS 数值名称, 
+                       wp.received_time AS 最后上报时间, 
+                       '视频告警' AS 数据类型, 
+                       ROW_NUMBER() OVER (PARTITION BY sc.sensor_id ORDER BY wp.received_time DESC) AS row_num 
+                     FROM 
+                       brain_device_manage.data_log_video_alarm wp 
+                       INNER JOIN brain_device_manage.sensor_cgqdw sc ON wp.device_id = sc.sensor_id 
+                     WHERE 
+                       sc.address LIKE %s 
+                       AND sc.project_code = '4' 
+                       AND (sc.address LIKE '%%配电%%' OR sc.address LIKE '%%水泵房%%')
+                   ) AS sub_query 
+                   WHERE 
+                       row_num = 1 
+            """
+
+        
+        # 添加设备类型筛选
+        if device_type:
+            base_sql += "\n               AND 设备类别 = %s"
+        
+        # 添加附加筛选条件
+        if additional_filter == 'fire_pump':
+            base_sql += "\n               AND 点位名称 LIKE '%%消防泵%%'"
+        elif additional_filter == 'not_fire_pump':
+            base_sql += "\n               AND 点位名称 NOT LIKE '%%消防泵%%'"
+        
+        # 添加排序
+        base_sql += "\n            ORDER BY \n               设备编号, 数据类型, 数值名称, 最后上报时间 DESC;"
         
         # 构建查询参数
-        like_pattern = f'%{building_name}%'
-        cur.execute(sql, (like_pattern, like_pattern, like_pattern, like_pattern, like_pattern))
+        params = []
+        if building_name != 'all':
+            like_pattern = f'%{building_name}%'
+            params = [like_pattern] * 7  # 7个基础占位符
         
+        # 添加设备类型参数
+        if device_type:
+            params.append(device_type)
+        
+        # 执行查询
+        cur.execute(base_sql, params)
         results = cur.fetchall()
         
         # 转换结果为JSON格式
@@ -657,8 +987,8 @@ def get_device_data():
                 '设备编号': row[0],
                 '点位名称': row[1],
                 '设备类别': row[2],
-                '数值名称': row[3],
-                '数值': row[4],
+                '数值': row[3],
+                '数值名称': row[4],
                 '最后上报时间': row[5]
             })
         
@@ -667,8 +997,10 @@ def get_device_data():
         
         return jsonify(rows)
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        error_message = f"Error: {e}\nTraceback: {traceback.format_exc()}"
+        print(error_message)
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

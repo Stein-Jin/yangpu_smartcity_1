@@ -17,31 +17,33 @@
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             color: #333;
+            width: 100%;
+            overflow-x: hidden;
         }
         .container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 20px;
+            width: 100%;
+            margin: 0;
+            padding: 10px;
             background-color: white;
-            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #333;
         }
         .main-content {
             display: flex;
-            gap: 20px;
+            gap: 10px;
+            width: 100%;
         }
         .left-section {
-            flex: 1;
-            min-width: 500px;
+            flex: 0 0 40%;
+            min-width: 300px;
         }
         .right-section {
-            flex: 1;
-            min-width: 500px;
+            flex: 0 0 60%;
+            min-width: 300px;
         }
         .chart-container {
             width: 100%;
@@ -178,26 +180,27 @@
                     <label for="buildingSelect">选择楼栋：</label>
                     <select id="buildingSelect" onchange="loadBuildingData(this.value)">
                         <option value="">-- 请选择楼栋 --</option>
+                        <option value="all">全部</option>
                         <option value="平凉路1740号">平凉路1740号</option>
                         <option value="平凉路1790号">平凉路1790号</option>
                         <option value="靖中大楼">靖中大楼</option>
-                        <option value="市光四村219号楼">市光四村219号楼</option>
-                        <option value="市光四村220号楼">市光四村220号楼</option>
-                        <option value="市光四村221号楼">市光四村221号楼</option>
-                        <option value="包头路935弄3号">包头路935弄3号</option>
-                        <option value="包头路935弄5号">包头路935弄5号</option>
+                        <option value="市光四村219号">市光四村219号</option>
+                        <option value="市光四村220号">市光四村220号</option>
+                        <option value="市光四村221号">市光四村221号</option>
+                        <option value="工农二村3号">包头路935弄3号-工农二村</option>
+                        <option value="工农二村5号">包头路935弄5号-工农二村</option>
                         <option value="靖宇大楼">靖宇大楼</option>
                         <option value="内江大楼">内江大楼</option>
                         <option value="五金江浦大楼">五金江浦大楼</option>
                         <option value="银浦大楼">银浦大楼</option>
-                        <option value="凤城六村1号楼">凤城六村1号楼</option>
-                        <option value="上焊大楼">上焊大楼</option>
+                        <option value="凤城六村一号">凤城六村一号</option>
+                        <option value="控江路1531号">控江路1531号-上焊大楼</option>
                         <option value="延吉四村25号">延吉四村25号</option>
                         <option value="延吉四村26号">延吉四村26号</option>
                         <option value="延吉四村68号">延吉四村68号</option>
-                        <option value="开鲁路286弄2号">开鲁路286弄2号</option>
-                        <option value="开鲁路286弄4号">开鲁路286弄4号</option>
-                        <option value="开鲁路286弄6号">开鲁路286弄6号</option>
+                        <option value="开鲁路286弄2号">开鲁路286弄2号-工农二村</option>
+                        <option value="开鲁路286弄4号">开鲁路286弄4号-工农二村</option>
+                        <option value="开鲁路286弄6号">开鲁路286弄6号-工农二村</option>
                     </select>
                 </div>
                 
@@ -207,11 +210,13 @@
                     <h2>拓扑关系说明</h2>
                     <ul>
                         <li><strong>总体架构</strong>：本拓扑图展示了单栋楼的设备连接关系，共有 20 栋楼，每栋楼的拓扑关系相同</li>
-                        <li><strong>RTU（远程终端单元）</strong>：通过无线网络直接连接到智慧消防云服务器</li>
-                        <li><strong>电气火灾</strong>：通过无线网络直接连接到智慧消防云服务器</li>
-                        <li><strong>消防水泵房设备</strong>：消防泵水压监测、环境监测、液位监测、消防控制柜设备连接在 RTU 上，通过有线连接到 RTU，再通过 RTU 回传数据</li>
+                        <li><strong>RTU/消防控制柜</strong>：RTU 和消防控制柜是同一个设备，RTU 从消防控制柜获取数据，通过无线网络传输到智慧消防云服务器</li>
+                        <li><strong>4G工业路由器</strong>：通过无线网络连接到智慧消防云服务器</li>
+                        <li><strong>消防水泵房设备</strong>：消防泵水压监测、环境监测、液位监测设备通过无线网络直接连接到智慧消防云服务器</li>
                         <li><strong>楼层末端喷淋水压监测</strong>：通过无线网络直接连接到智慧消防服务器</li>
-                        <li><strong>视频监测</strong>：通过有线网络连接到楼栋，再通过楼栋的网络连接到服务器</li>
+                        <li><strong>电气火灾</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                        <li><strong>视频监测（占道）</strong>：通过无线网络直接连接到智慧消防云服务器</li>
+                        <li><strong>视频监测（着火）</strong>：通过有线方式连接到 4G 工业路由器，再通过 4G 工业路由器发送到智慧消防云服务器</li>
                     </ul>
                 </div>
             </div>
@@ -220,6 +225,14 @@
             <div class="right-section">
                 <div class="device-list">
                     <h2>设备清单与数据</h2>
+                    <div class="filter-section" style="margin-bottom: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 8px;">
+                        <label for="dataFilter">筛选数据：</label>
+                        <select id="dataFilter" onchange="filterDeviceData(this.value)">
+                            <option value="all">全部</option>
+                            <option value="abnormal">异常</option>
+                            <option value="normal">正常</option>
+                        </select>
+                    </div>
                     <div id="deviceTableContainer">
                         <div class="loading">请选择楼栋查看设备数据</div>
                     </div>
@@ -240,43 +253,45 @@
                 // 核心节点 - 置于顶层，使用更有标识度的图标
                 { id: 'server', name: '智慧消防服务器（公有云）', symbolSize: 60, itemStyle: { color: '#5470c6' }, symbol: 'pin', x: '50%', y: '10%' },
                 
-                // 楼栋节点
-                { id: 'building1', name: buildingName || '楼栋', symbolSize: 50, itemStyle: { color: '#91cc75' } },
+                // RTU/消防控制柜节点
+                { id: 'rtu', name: 'RTU/消防控制柜', symbolSize: 40, itemStyle: { color: '#fac858' } },
                 
-                // RTU 节点
-                { id: 'rtu', name: 'RTU（远程终端单元）', symbolSize: 40, itemStyle: { color: '#fac858' } },
+                // 4G工业路由器节点
+                { id: 'router', name: '4G工业路由器', symbolSize: 40, itemStyle: { color: '#91cc75' } },
                 
                 // 设备节点 - 不同图标和颜色表示不同类型
                 { id: 'water_pressure_pump', name: '消防泵水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
                 { id: 'water_pressure_floor', name: '楼层末端喷淋水压监测', symbolSize: 30, itemStyle: { color: '#5470c6' }, symbol: 'circle' },
                 { id: 'electric_fire', name: '电气火灾', symbolSize: 30, itemStyle: { color: '#ee6666' }, symbol: 'rect' },
-                { id: 'video', name: '视频监测', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
+                { id: 'video_occupation', name: '视频监测（占道）', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
+                { id: 'video_fire', name: '视频监测（着火）', symbolSize: 30, itemStyle: { color: '#fac858' }, symbol: 'roundRect' },
                 { id: 'environment', name: '环境监测', symbolSize: 30, itemStyle: { color: '#91cc75' }, symbol: 'triangle' },
-                { id: 'liquid_level', name: '液位监测', symbolSize: 30, itemStyle: { color: '#73c0de' }, symbol: 'diamond' },
-                { id: 'fire_control', name: '消防控制柜', symbolSize: 30, itemStyle: { color: '#fc8452' }, symbol: 'arrow' }
+                { id: 'liquid_level', name: '液位监测', symbolSize: 30, itemStyle: { color: '#73c0de' }, symbol: 'diamond' }
             ];
             
             var links = [
-                // 楼栋连接到服务器
-                { source: 'building1', target: 'server', lineStyle: { color: '#3ba272', width: 2, type: 'solid' }, label: { show: true, formatter: '有线网络' } },
+                // RTU/消防控制柜通过无线网络连接到服务器
+                { source: 'rtu', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' } },
                 
-                // RTU 通过无线网络直接连接到服务器
-                { source: 'rtu', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+                // 4G工业路由器通过无线网络连接到服务器
+                { source: 'router', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' } },
                 
-                // 消防水泵房设备连接到 RTU（有线）
-                { source: 'water_pressure_pump', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' }, label: { show: true, formatter: '有线连接' } },
-                { source: 'environment', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-                { source: 'liquid_level', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
-                { source: 'fire_control', target: 'rtu', lineStyle: { color: '#3ba272', width: 1.5, type: 'solid' } },
+                // 视频监测（着火）通过有线方式连接到4G工业路由器
+                { source: 'video_fire', target: 'router', lineStyle: { color: '#3ba272',width: 1.5, type: 'solid' , curveness: 0} },
+                
+                // 视频监测（占道）通过无线网络直接连接到服务器
+                { source: 'video_occupation', target: 'server', lineStyle: { color: '#fc8452', width: 2, type: 'dashed' } },
+                
+                // 消防水泵房设备通过无线网络直接连接到服务器
+                { source: 'water_pressure_pump', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
+                { source: 'environment', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
+                { source: 'liquid_level', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
                 
                 // 楼层末端喷淋水压监测通过无线网络连接到服务器
-                { source: 'water_pressure_floor', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
+                { source: 'water_pressure_floor', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } },
                 
                 // 电气火灾通过无线网络直接连接到服务器
-                { source: 'electric_fire', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' }, label: { show: true, formatter: '无线网络' } },
-                
-                // 视频监测连接到楼栋（有线）
-                { source: 'video', target: 'building1', lineStyle: { color: '#3ba272', width: 1, type: 'solid' } }
+                { source: 'electric_fire', target: 'server', lineStyle: { color: '#fc8452', width: 1.5, type: 'dashed' } }
             ];
             
             // 图表配置
@@ -299,7 +314,7 @@
                 animationDurationUpdate: 1500,
                 animationEasingUpdate: 'quinticInOut',
                 legend: {
-                    data: ['消防泵水压监测', '楼层末端喷淋水压监测', '电气火灾', '视频监测', '环境监测', '液位监测', '消防控制柜', 'RTU'],
+                    data: ['消防泵水压监测', '楼层末端喷淋水压监测', '电气火灾', '视频监测（占道）', '视频监测（着火）', '环境监测', '液位监测', 'RTU/消防控制柜', '4G工业路由器'],
                     orient: 'horizontal',
                     bottom: 0
                 },
@@ -338,7 +353,33 @@
                             gravity: 0.1,
                             center: [300, 100],
                             layoutAnimation: true
-                        }
+                        },
+                        // 添加点击事件
+                        itemStyle: {
+                            emphasis: {
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }
+                        },
+                        // 添加点击事件
+                        tooltip: {
+                            trigger: 'item'
+                        },
+                        // 添加点击事件
+                        emphasis: {
+                            lineStyle: {
+                                width: 4
+                            }
+                        },
+                        // 添加点击事件
+                        data: nodes.map(node => {
+                            return {
+                                ...node,
+                                itemStyle: {
+                                    color: node.itemStyle.color
+                                }
+                            };
+                        })
                     }
                 ]
             };
@@ -352,7 +393,7 @@
             currentBuilding = buildingName;
             
             // 更新拓扑图
-            initTopologyChart(buildingName);
+            initTopologyChart(buildingName === 'all' ? '全部楼栋' : buildingName);
             
             // 加载设备数据
             if (buildingName) {
@@ -360,7 +401,12 @@
                 
                 // 调用后端 API 获取数据
                 fetch(`/api/device-data?building_name=${encodeURIComponent(buildingName)}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         // 渲染设备数据表格
                         renderDeviceTable(data);
@@ -374,12 +420,87 @@
             }
         }
         
-        // 渲染设备数据表格
+        // 格式化时间函数
+        function formatDateTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+        
+        // 检查是否为本月数据
+        function checkIfCurrentMonth(dateString) {
+            if (!dateString) return false;
+            const date = new Date(dateString);
+            const now = new Date();
+            return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+        }
+        
+        // 分页相关变量
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let deviceData = [];
+        let currentFilter = 'all';
+        
+        // 渲染设备数据表格（带分页）
         function renderDeviceTable(data) {
-            if (!data || data.length === 0) {
+            deviceData = data;
+            currentPage = 1;
+            
+            if (!data || !Array.isArray(data) || data.length === 0) {
                 document.getElementById('deviceTableContainer').innerHTML = '<div class="error">未找到设备数据</div>';
                 return;
             }
+            
+            filterDeviceData(currentFilter);
+        }
+        
+        // 筛选设备数据
+        function filterDeviceData(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+            
+            let filteredData = deviceData;
+            
+            if (filter === 'abnormal') {
+                // 筛选异常数据：数值为0或最后上报时间不是本月
+                filteredData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isZeroValue = value === 0 || value === '0';
+                    const isNotCurrentMonth = !checkIfCurrentMonth(item['最后上报时间']);
+                    return isZeroValue || isNotCurrentMonth;
+                });
+            } else if (filter === 'normal') {
+                // 筛选正常数据：数值不为0且最后上报时间是本月
+                filteredData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isNotZeroValue = value !== 0 && value !== '0';
+                    const isCurrentMonth = checkIfCurrentMonth(item['最后上报时间']);
+                    return isNotZeroValue && isCurrentMonth;
+                });
+            }
+            
+            if (filteredData.length === 0) {
+                document.getElementById('deviceTableContainer').innerHTML = '<div class="error">未找到符合条件的设备数据</div>';
+                return;
+            }
+            
+            renderPagination(filteredData);
+        }
+        
+        // 渲染分页内容
+        function renderPagination(filteredData) {
+            const displayData = filteredData || deviceData;
+            const totalItems = displayData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentData = displayData.slice(startIndex, endIndex);
             
             let tableHTML = `
                 <table class="device-table">
@@ -396,15 +517,22 @@
                     <tbody>
             `;
             
-            data.forEach(item => {
+            currentData.forEach(item => {
+                const formattedTime = formatDateTime(item['最后上报时间']);
+                // 检查是否为本月数据
+                const isCurrentMonth = checkIfCurrentMonth(item['最后上报时间']);
+                const timeCellStyle = isCurrentMonth ? '' : 'style="color: red;"';
+                // 检查数值是否为0
+                const value = item['数值'] || '';
+                const valueCellStyle = value === 0 || value === '0' ? 'style="color: red;"' : '';
                 tableHTML += `
                     <tr>
-                        <td>${item['设备编号']}</td>
-                        <td>${item['点位名称']}</td>
-                        <td>${item['设备类别']}</td>
-                        <td>${item['数值名称']}</td>
-                        <td>${item['数值']}</td>
-                        <td>${item['最后上报时间']}</td>
+                        <td>${item['设备编号'] || ''}</td>
+                        <td>${item['点位名称'] || ''}</td>
+                        <td>${item['设备类别'] || ''}</td>
+                        <td>${item['数值名称'] || ''}</td>
+                        <td ${valueCellStyle}>${value}</td>
+                        <td ${timeCellStyle}>${formattedTime}</td>
                     </tr>
                 `;
             });
@@ -414,11 +542,155 @@
                 </table>
             `;
             
-            document.getElementById('deviceTableContainer').innerHTML = tableHTML;
+            // 添加分页控件
+            let paginationHTML = `
+                <div class="pagination" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 10px;">
+                        <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(1)" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">首页</button>
+                        <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(currentPage - 1)" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">上一页</button>
+                        <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(currentPage + 1)" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">下一页</button>
+                        <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(totalPages)" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">末页</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>第 ${currentPage} / ${totalPages} 页</span>
+                        <span>共 ${totalItems} 条数据</span>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>跳转到:</span>
+                            <input type="number" id="pageInput" min="1" max="${totalPages}" value="${currentPage}" style="width: 60px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                            <button onclick="jumpToPage()" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">跳转</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('deviceTableContainer').innerHTML = tableHTML + paginationHTML;
+        }
+        
+        // 切换页面
+        function changePage(page) {
+            let displayData = deviceData;
+            if (currentFilter === 'abnormal') {
+                displayData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isZeroValue = value === 0 || value === '0';
+                    const isNotCurrentMonth = !checkIfCurrentMonth(item['最后上报时间']);
+                    return isZeroValue || isNotCurrentMonth;
+                });
+            } else if (currentFilter === 'normal') {
+                displayData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isNotZeroValue = value !== 0 && value !== '0';
+                    const isCurrentMonth = checkIfCurrentMonth(item['最后上报时间']);
+                    return isNotZeroValue && isCurrentMonth;
+                });
+            }
+            const totalPages = Math.ceil(displayData.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderPagination(displayData);
+            }
+        }
+        
+        // 跳转到指定页面
+        function jumpToPage() {
+            const pageInput = document.getElementById('pageInput');
+            const page = parseInt(pageInput.value);
+            if (!isNaN(page)) {
+                changePage(page);
+            }
         }
         
         // 初始化拓扑图
         initTopologyChart();
+        
+        // 添加点击事件（只绑定一次）
+        myChart.on('click', function(params) {
+            if (params.dataType === 'node') {
+                const nodeId = params.data.id;
+                const buildingName = currentBuilding;
+                
+                if (buildingName) {
+                    // 根据设备类型进行筛选
+                    let deviceType = '';
+                    let additionalFilter = '';
+                    
+                    switch (nodeId) {
+                        case 'server':
+                            // 点击服务器时，清除筛选条件，查询所有设备
+                            deviceType = '';
+                            additionalFilter = '';
+                            break;
+                        case 'electric_fire':
+                            deviceType = '电气火灾传感器';
+                            break;
+                        case 'video_occupation':
+                            deviceType = '视频告警传感器';
+                            additionalFilter = 'occupation';
+                            break;
+                        case 'video_fire':
+                            deviceType = '视频告警传感器';
+                            additionalFilter = 'fire';
+                            break;
+                        case 'liquid_level':
+                            deviceType = '液位监测传感器';
+                            break;
+                        case 'rtu':
+                            deviceType = '消防控制柜';
+                            break;
+                        case 'fire_control':
+                            deviceType = '消防控制柜传感器';
+                            break;
+                        case 'environment':
+                            deviceType = '环境监测传感器';
+                            break;
+                        case 'water_pressure_pump':
+                            deviceType = '水压监测传感器';
+                            additionalFilter = 'fire_pump';
+                            break;
+                        case 'water_pressure_floor':
+                            deviceType = '水压监测传感器';
+                            additionalFilter = 'not_fire_pump';
+                            break;
+                        default:
+                            // 其他节点（如路由器）不进行筛选
+                            return;
+                    }
+                    
+                    // 加载设备数据
+                    document.getElementById('deviceTableContainer').innerHTML = '<div class="loading">加载设备数据中...</div>';
+                    
+                    // 打印请求参数到控制台
+                    console.log('请求参数:', {
+                        building_name: buildingName,
+                        device_type: deviceType,
+                        additional_filter: additionalFilter
+                    });
+                    
+                    // 调用后端 API 获取数据
+                    fetch(`/api/device-data?building_name=${encodeURIComponent(buildingName)}&device_type=${encodeURIComponent(deviceType)}&additional_filter=${encodeURIComponent(additionalFilter)}`)
+                        .then(response => {
+                            console.log('响应状态:', response.status);
+                            if (!response.ok) {
+                                return response.json().then(errorData => {
+                                    throw new Error(errorData.details || 'Network response was not ok');
+                                }).catch(() => {
+                                    throw new Error('Network response was not ok');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('返回的数据:', data);
+                            // 渲染设备数据表格
+                            renderDeviceTable(data);
+                        })
+                        .catch(error => {
+                            console.error('Error loading device data:', error);
+                            document.getElementById('deviceTableContainer').innerHTML = `<div class="error">加载设备数据失败: ${error.message}</div>`;
+                        });
+                }
+            }
+        });
         
         // 响应式处理
         window.addEventListener('resize', function() {
