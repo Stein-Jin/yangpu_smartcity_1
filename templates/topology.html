@@ -6,6 +6,8 @@
     <title>设备拓扑关系图</title>
     <!-- ECharts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- 统一的样式 -->
     <style>
         * {
@@ -225,13 +227,16 @@
             <div class="right-section">
                 <div class="device-list">
                     <h2>设备清单与数据</h2>
-                    <div class="filter-section" style="margin-bottom: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 8px;">
-                        <label for="dataFilter">筛选数据：</label>
-                        <select id="dataFilter" onchange="filterDeviceData(this.value)">
-                            <option value="all">全部</option>
-                            <option value="abnormal">异常</option>
-                            <option value="normal">正常</option>
-                        </select>
+                    <div class="filter-section" style="margin-bottom: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="dataFilter">筛选数据：</label>
+                            <select id="dataFilter" onchange="filterDeviceData(this.value)">
+                                <option value="all">全部</option>
+                                <option value="abnormal">异常</option>
+                                <option value="normal">正常</option>
+                            </select>
+                        </div>
+                        <button onclick="exportToExcel()" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">导出为表格</button>
                     </div>
                     <div id="deviceTableContainer">
                         <div class="loading">请选择楼栋查看设备数据</div>
@@ -424,12 +429,12 @@
         function formatDateTime(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const hours = String(date.getUTCHours()).padStart(2, '0');
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(date.getUTCSeconds()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
         
@@ -598,6 +603,55 @@
             if (!isNaN(page)) {
                 changePage(page);
             }
+        }
+        
+        // 导出为Excel
+        function exportToExcel() {
+            if (!deviceData || deviceData.length === 0) {
+                alert('没有可导出的数据');
+                return;
+            }
+            
+            let exportData = deviceData;
+            
+            if (currentFilter === 'abnormal') {
+                exportData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isZeroValue = value === 0 || value === '0';
+                    const isNotCurrentMonth = !checkIfCurrentMonth(item['最后上报时间']);
+                    return isZeroValue || isNotCurrentMonth;
+                });
+            } else if (currentFilter === 'normal') {
+                exportData = deviceData.filter(item => {
+                    const value = item['数值'] || '';
+                    const isNotZeroValue = value !== 0 && value !== '0';
+                    const isCurrentMonth = checkIfCurrentMonth(item['最后上报时间']);
+                    return isNotZeroValue && isCurrentMonth;
+                });
+            }
+            
+            if (exportData.length === 0) {
+                alert('没有可导出的数据');
+                return;
+            }
+            
+            const orderedData = exportData.map(item => ({
+                '设备编号': item['设备编号'],
+                '点位名称': item['点位名称'],
+                '设备类别': item['设备类别'],
+                '数值名称': item['数值名称'],
+                '数值': item['数值'],
+                '最后上报时间': formatDateTime(item['最后上报时间'])
+            }));
+            
+            const worksheet = XLSX.utils.json_to_sheet(orderedData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, '设备数据');
+            
+            const buildingName = currentBuilding === 'all' ? '全部楼栋' : currentBuilding;
+            const fileName = `设备数据_${buildingName}_${new Date().getTime()}.xlsx`;
+            
+            XLSX.writeFile(workbook, fileName);
         }
         
         // 初始化拓扑图
